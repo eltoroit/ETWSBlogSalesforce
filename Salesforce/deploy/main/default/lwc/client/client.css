@@ -1,0 +1,4 @@
+:host {
+	/* This allows the component to bt the actual rows for the table defined in the parent component */
+	display: contents;
+}

@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<%- include('../partials/header.ejs', {title: 'Heroku demo'}) %>
+		<style>
+			.full {
+				height: 100vh;
+				width: 100%;
+			}
+		</style>
+	</head>
+
+	<body>
+		<div class="full">
+			<% if (locals.dttm) { %> <%- locals.dttm %> <% } %>
+
+			<div class="slds-grid slds-wrap slds-p-around_medium">
+				<div class="slds-col slds-size_1-of-1 slds-small-size_3-of-12"></div>
+				<div class="slds-col slds-size_1-of-1 slds-small-size_6-of-12">
+					<div class="" style="text-align: center">
+						<div>
+							<img src="THLogo.png" />
+						</div>
+						<div class="slds-p-top_medium">&nbsp;</div>
+					</div>
+				</div>
+				<div class="slds-col slds-size_1-of-1 slds-small-size_3-of-12"></div>
+			</div>
+		</div>
+	</body>
+</html>

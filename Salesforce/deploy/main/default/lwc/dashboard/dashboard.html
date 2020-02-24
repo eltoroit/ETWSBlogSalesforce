@@ -1,0 +1,72 @@
+<template>
+	<lightning-card title="Real-Time Demo - Dashboard">
+		<div slot="actions">
+			<lightning-button label="Close All" onclick={closeAll}></lightning-button>
+			<lightning-button label="Open All" onclick={openAll} variant="brand"></lightning-button>
+		</div>
+		<div class="slds-p-horizontal_small">
+			<lightning-layout multiple-rows="true">
+				<lightning-layout-item size="6">
+					<lightning-radio-group
+						name="radioGroup"
+						label="Channel"
+						options={channelData.all}
+						value={channelData.selected}
+						onchange={handleChannelChange}
+						type="button"
+					></lightning-radio-group
+					><br />
+					<lightning-input label="Number Of Clients" value={clientData.count} onchange={handleNumberClientsChanged}></lightning-input>
+				</lightning-layout-item>
+				<lightning-layout-item size="2"> </lightning-layout-item>
+				<lightning-layout-item size="4">
+					<table>
+						<template for:each={displayStates} for:item="state">
+							<tr key={state.name}>
+								<th>{state.name}</th>
+								<td>{state.count}</td>
+							</tr>
+						</template>
+						<template if:true={postCounter}>
+							<tr>
+								<th>
+									<lightning-button label="Posts" variant="Base" onclick={handleResetPosts}></lightning-button>
+									{postData.message}
+								</th>
+								<td>{postCounter}</td>
+							</tr>
+						</template>
+					</table>
+				</lightning-layout-item>
+			</lightning-layout>
+		</div>
+	</lightning-card>
+	<lightning-card>
+		<table border="1">
+			<thead>
+				<tr>
+					<th>Client Id</th>
+					<th colspan="3">Publish</th>
+					<th>Received</th>
+					<th>Buttons</th>
+				</tr>
+			</thead>
+			<tbody>
+				<template for:each={clientData.all} for:item="c">
+					<c-client
+						key={c.key}
+						client-id={c.key}
+						channel={channelUrl}
+						number-clients={clientData.count}
+						onnotifystate={handleNotifyState}
+						oncountposts={handleCountPosts}
+					></c-client>
+				</template>
+			</tbody>
+		</table>
+	</lightning-card>
+	<div class="slds-hide">
+		{clientDataRefresh}<br />
+		{postCounter}<br />
+	</div>
+</template>

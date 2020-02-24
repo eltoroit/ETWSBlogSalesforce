@@ -1,0 +1,36 @@
+{
+	// See https://go.microsoft.com/fwlink/?LinkId=733558
+	// for the documentation about the tasks.json format
+	"version": "2.0.0",
+	"tasks": [
+		{
+			"label": "ELTOROIT Transpile Typescript",
+			"type": "shell",
+			"command": "npm run prod",
+			"group": "none",
+			"presentation": {
+				"reveal": "always",
+				"panel": "dedicated",
+				"clear": true,
+				"focus": false,
+				"showReuseMessage": true
+			}
+		},
+		{
+			"label": "ELTOROIT Transpile Typescript + Execute Server",
+			"type": "shell",
+			"command": "npm run serve",
+			"group": {
+				"kind": "build",
+				"isDefault": true
+			},
+			"presentation": {
+				"reveal": "always",
+				"panel": "dedicated",
+				"clear": true,
+				"focus": false,
+				"showReuseMessage": true
+			}
+		}
+	]
+}

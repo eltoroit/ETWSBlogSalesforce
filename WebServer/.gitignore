@@ -1,0 +1,7 @@
+node_modules/*
+.env
+.DS_Store
+build/*
+LWC4HEROKU/*
+package-lock.json
+.sfdx/tools/apex.db

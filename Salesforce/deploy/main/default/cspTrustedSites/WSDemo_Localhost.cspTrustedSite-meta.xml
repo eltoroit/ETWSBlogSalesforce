@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CspTrustedSite xmlns="http://soap.sforce.com/2006/04/metadata">
+    <context>All</context>
+    <description>wss://localhost:5001/ws?fromWsId=test1</description>
+    <endpointUrl>wss://localhost:5001</endpointUrl>
+    <isActive>true</isActive>
+</CspTrustedSite>

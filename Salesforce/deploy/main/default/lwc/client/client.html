@@ -1,0 +1,29 @@
+<template>
+	<tr>
+		<td>{title}</td>
+		<td style="min-width: 150px; max-width: 150px;">
+			<template if:true={isConnected}>
+				<lightning-input label="To" variant="label-inline" value={toId} onchange={handleToIdChange}></lightning-input>
+			</template>
+		</td>
+		<td style="max-width: 200px;">
+			<template if:true={isConnected}>
+				<lightning-input label="Msg" variant="label-inline" value={msg} onchange={handleMessageChange}></lightning-input>
+			</template>
+		</td>
+		<td>
+			<template if:true={isConnected}>
+				<lightning-button label="Publish" onclick={handlePublishClick} if:true={isConnected} variant="success"></lightning-button>
+			</template>
+		</td>
+		<td style="max-width: 200px;">
+			<lightning-formatted-rich-text value={received}> </lightning-formatted-rich-text>
+		</td>
+		<td>
+			<lightning-button-group>
+				<lightning-button label="Close" onclick={close} if:true={isConnected} variant="destructive"></lightning-button>
+				<lightning-button label="Open" onclick={open} if:false={isConnected} variant="brand"></lightning-button>
+			</lightning-button-group>
+		</td>
+	</tr>
+</template>

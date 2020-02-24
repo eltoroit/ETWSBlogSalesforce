@@ -1,0 +1,303 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<%- include('../partials/header.ejs', {title: 'WebSocket demo'}) %>
+		<style>
+			.full {
+				height: 100vh;
+				width: 100%;
+				margin: 25px;
+			}
+			h1,
+			h2 {
+				text-align: center;
+			}
+
+			.red {
+				color: red;
+				background-color: yellow;
+			}
+		</style>
+	</head>
+
+	<body>
+		<div class="full">
+			<h2 class="red">A MORE COMPLEX DEMO HAS BEEN BUILT ON SALESFORCE!</h2>
+			<h1>Websocket Tester</h1>
+
+			<h3 style="width:100%; text-align: center; background-color: aliceblue;">Server</h3>
+			<p>
+				<select id="selServer" onchange="setUrl();">
+					<option value="HEROKU" selected>Heroku</option>
+					<option value="LOCALHOST">Localhost</option>
+				</select>
+			</p>
+			<p>
+				<input type="text" id="wsUrl" value="" style="width:100%" />
+			</p>
+			<p>
+				<button onclick="wsClose()" id="btnClose" disabled>Close</button>
+				<button onclick="wsOpen()" id="btnOpen" disabled>Open</button>
+			</p>
+			<p><input type="checkbox" id="cbReopen" checked />Force re-open<br /></p>
+			<p><input type="checkbox" id="cbKeepAlive" checked />Keep alive<br /></p>
+
+			<h3 style="width:100%; text-align: center; background-color: aliceblue;">Message</h3>
+			<table width="100%">
+				<tr>
+					<td style="text-align:left">From Id:</td>
+					<td width="100%">
+						<input type="text" id="tbFromId" value="test1" onchange="fromIdChanged(this);" style="width:100%" />
+					</td>
+				</tr>
+				<tr>
+					<td style="text-align:left">To Id:</td>
+					<td>
+						<input type="text" id="tbToId" value="-1" style="width:100%" />
+					</td>
+				</tr>
+				<tr>
+					<td style="text-align:left">Message:</td>
+					<td>
+						<input type="text" id="tbMsg" style="width:100%" />
+					</td>
+				</tr>
+				<tr>
+					<td></td>
+					<td>
+						<button onclick="btnPublish()" id="btnPub" disabled>Send</button>
+					</td>
+				</tr>
+			</table>
+
+			<h3 style="width:100%; text-align: center; background-color: aliceblue;">History</h3>
+			<p>
+				<button onclick="btnClearMessages()" id="btnClear">Clear</button>
+			</p>
+			<p><span id="age"></span><br /></p>
+			<table id="messages" border="1">
+				<tr id="msgHeader">
+					<th>Message</th>
+					<th>Age</th>
+					<th>DTTM</th>
+				</tr>
+			</table>
+		</div>
+	</body>
+
+	<script>
+		'use strict';
+
+		let ws;
+		let wsFromId;
+		let wsState = {
+			isOpen: false,
+			hasError: false,
+			closeRequested: false,
+			lastDTTM: new Date()
+		};
+		// https://developer.mozilla.org/en-US/docs/Web/API/WebSocket/readyState
+		const wsReadyStatesObj = { CONNECTING: 0, OPEN: 1, CLOSING: 2, CLOSED: 3 };
+		const wsReadyStatesList = ['CONNECTING', 'OPEN', 'CLOSING', 'CLOSED'];
+
+		function msgAdd(data) {
+			let cell;
+			let table = document.getElementById('messages');
+			let row = document.createElement('tr');
+
+			cell = document.createElement('td');
+			cell.appendChild(document.createTextNode(data));
+			row.appendChild(cell);
+
+			cell = document.createElement('td');
+			cell.appendChild(document.createTextNode(getAge()));
+			row.appendChild(cell);
+
+			cell = document.createElement('td');
+			cell.appendChild(document.createTextNode(new Date().toLocaleTimeString()));
+			row.appendChild(cell);
+
+			// table.after(row, table.firstChild);
+			document.getElementById('msgHeader').after(row);
+		}
+
+		function btnPublish() {
+			msgAdd(`POSTING: ${document.getElementById('tbMsg').value}`);
+			wsSend('POST');
+		}
+
+		function setUrl() {
+			let url;
+			const type = document.getElementById('selServer').value;
+
+			wsFromId = document.getElementById('tbFromId').value;
+			switch (type) {
+				case 'LOCALHOST':
+					url = `wss://localhost:5001/ws?fromWsId=${wsFromId}`;
+					break;
+				case 'HEROKU':
+					url = `wss://test-wsock01.herokuapp.com/ws?fromWsId=${wsFromId}`;
+					break;
+				default:
+					alert(`${type} is not allowed for type of URL`);
+			}
+
+			document.getElementById('wsUrl').value = url;
+			document.getElementById('btnClose').disabled = false;
+			document.getElementById('btnOpen').disabled = false;
+			wsClose();
+		}
+
+		function btnClearMessages() {
+			let table = document.getElementById('messages');
+			while (table.rows.length > 1) {
+				table.deleteRow(1);
+			}
+		}
+
+		function fromIdChanged(tb) {
+			wsFromId = tb.value;
+			setUrl();
+		}
+
+		function getAge() {
+			let age = new Date() - wsState.lastDTTM;
+			let msg = '';
+
+			// Time calculations for days, hours, minutes and seconds
+			let days = Math.floor(age / (1000 * 60 * 60 * 24));
+			if (days > 0) msg += `${days} d `;
+
+			let hours = Math.floor((age % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+			if (hours > 0) msg += `${hours} h `;
+
+			let minutes = Math.floor((age % (1000 * 60 * 60)) / (1000 * 60));
+			if (minutes > 0) msg += `${minutes} m `;
+
+			let seconds = Math.floor((age % (1000 * 60)) / 1000);
+			if (seconds > 0) {
+				msg += `${seconds} s `;
+			} else {
+				msg += `0 s `;
+			}
+
+			return msg;
+		}
+
+		function wsClose() {
+			return new Promise((resolve, reject) => {
+				if (wsState.isOpen) {
+					wsState.closeRequested = true;
+					ws.close();
+					let tmpTimer = setInterval(() => {
+						console.log(`CHECK STATUS (CLOSE-1): ${wsReadyStatesList[ws.readyState]}`, ws);
+						if (ws.readyState === wsReadyStatesObj.CLOSED) {
+							console.log(`CHECK STATUS (CLOSE-2): ${wsReadyStatesList[ws.readyState]}`, ws);
+							resolve();
+							clearInterval(tmpTimer);
+						}
+					}, 100);
+				} else {
+					resolve();
+				}
+			});
+		}
+
+		function wsOpen() {
+			return new Promise((resolve, reject) => {
+				if (!wsState.isOpen) {
+					wsState.closeRequested = false;
+					wsState.hasError = false;
+					wsReset();
+					let tmpTimer = setInterval(() => {
+						console.log(`CHECK STATUS (OPEN-1): ${wsReadyStatesList[ws.readyState]}`, ws);
+						if (ws.readyState === wsReadyStatesObj.OPEN) {
+							console.log(`CHECK STATUS (OPEN-2): ${wsReadyStatesList[ws.readyState]}`, ws);
+							resolve();
+							clearInterval(tmpTimer);
+						}
+					}, 100);
+				} else {
+					resolve();
+				}
+			});
+		}
+
+		function wsReset() {
+			const HOST = document.getElementById('wsUrl').value;
+			msgAdd(`HOST: ${HOST}`);
+			ws = new WebSocket(HOST);
+
+			ws.onclose = event => {
+				msgAdd(`CLOSED`);
+				wsState.isOpen = false;
+				document.getElementById('btnPub').disabled = true;
+
+				if (!wsState.closeRequested && !wsState.hasError) {
+					if (document.getElementById('cbReopen').checked) {
+						msgAdd(`REOPEN`);
+						wsOpen();
+					}
+				}
+			};
+
+			ws.onerror = event => {
+				msgAdd(`*** ERROR`);
+				document.getElementById('btnPub').disabled = true;
+				wsState.hasError = true;
+			};
+
+			ws.onmessage = event => {
+				const sMsg = event.data;
+				const jMsg = JSON.parse(sMsg);
+
+				msgAdd(`GOT: ${jMsg.type} [${jMsg.fromWsId}@${jMsg.fromDyno} => ${jMsg.toWsId}@${jMsg.toDyno}]`);
+				wsState.lastDTTM = new Date();
+			};
+
+			ws.onopen = event => {
+				msgAdd(`OPEN`);
+				wsState.isOpen = true;
+				document.getElementById('btnPub').disabled = false;
+			};
+		}
+
+		function wsSend(type) {
+			let message = { type };
+			message.dttm = new Date();
+			message.fromWsId = wsFromId;
+			message.msg = document.getElementById('tbMsg').value;
+			message.toWsId = document.getElementById('tbToId').value;
+
+			ws.send(JSON.stringify(message, null, 1));
+			msgAdd(`SENT: ${type}`);
+			wsState.lastDTTM = new Date();
+		}
+
+		setInterval(() => {
+			if (document.getElementById('cbKeepAlive').checked) {
+				if (wsState.isOpen) {
+					wsSend('PING');
+				} else {
+					if (ws && !wsState.closeRequested) {
+						wsOpen();
+					}
+				}
+			}
+		}, 30000);
+
+		setInterval(() => {
+			if (!wsState.hasError) {
+				if (!wsState.isOpen) {
+					document.getElementById('age').innerHTML = '';
+				} else {
+					document.getElementById('age').innerHTML = `Time since last message:  ${getAge()}`;
+				}
+			}
+		}, 100);
+
+		// On load :-)
+		setUrl();
+		wsOpen();
+	</script>
+</html>

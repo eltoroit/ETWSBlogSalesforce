@@ -1,0 +1,10 @@
+{
+	"orgName": "ELTOROIT Demos Computing",
+	"edition": "Developer",
+	"hasSampleData": false,
+	"settings": {
+		"mobileSettings": {
+			"enableS1EncryptedStoragePref2": false
+		}
+	}
+}
