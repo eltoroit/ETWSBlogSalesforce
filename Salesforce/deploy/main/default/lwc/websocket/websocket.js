@@ -116,7 +116,7 @@ export default class Websocket {
 
 				if (oldDyno && oldDyno !== newDyno) {
 					const msg = JSON.stringify({ msg: "this._dyno changed", fromId: this._Id, oldDyno, newDyno }, null, 1);
-					alert(msg);
+					// alert(msg);
 					console.log(msg);
 				}
 			}

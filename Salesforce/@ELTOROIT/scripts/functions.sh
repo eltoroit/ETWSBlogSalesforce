@@ -110,7 +110,7 @@ function everything() {
 	if [[ "$GENERATE_PASSWORD" = true ]]; then
 		showStatus "*** Generate Password..."
 		et_sfdx force:user:password:generate --json
-		et_sfdx force:user:display
+		et_sfdx force:user:display --json
 		showComplete
 	fi
 

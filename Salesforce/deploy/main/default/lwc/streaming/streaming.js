@@ -76,7 +76,7 @@ export default class Streaming {
 
 	_initialize() {
 		subscribe(this.channel, -1, response => {
-			console.log("New message received : ", JSON.stringify(response));
+			// console.log("New message received : ", JSON.stringify(response));
 			this._notifyState("OPEN", "message", response);
 			const payload = response.data.payload;
 			if (this.clientId === payload.toId__c) {
@@ -103,7 +103,7 @@ export default class Streaming {
 			this.dispatchEvent(new CustomEvent("message", { detail: this.buildMessage("OPEN", this.clientId, "Subscribe") }));
 		});
 		onError(error => {
-			console.log("Received ERROR from server: ", JSON.stringify(error));
+			console.error("Received ERROR from server: ", JSON.stringify(error));
 			this._close();
 		});
 	}
