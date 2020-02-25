@@ -59,26 +59,26 @@ There is also a bit of a delay when publishing the event with Long Polling becau
 I built a sample app to compare WebSockets vs. Platform Events, and I was surprised when I saw the numbers.
 
 <p align="center">
-<img src="https://github.com/eltoroit/ETWSBlogStarter/blob/master/Blog/FullScreenSalesforce.png?raw=true">
+<img src="https://github.com/eltoroit/ETWSBlogSalesforce/blob/master/Blog/FullScreenSalesforce.png?raw=true">
 </p>
 
 This sample app allows me to create any number of clients and publish to all of them; then, I can see how long it took for every client to receive the messages. This chart shows the data when I run the test 100 times with 50 clients. As shown in the chart below, it took an average of 5 seconds for Platform Events, but it took about 0.2 seconds for WebSockets.
 
 <p align="center">
-<img src="https://github.com/eltoroit/ETWSBlogStarter/blob/master/Blog/50Clients-EveryMessage.png?raw=true">
+<img src="https://github.com/eltoroit/ETWSBlogSalesforce/blob/master/Blog/50Clients-EveryMessage.png?raw=true">
 </p>
 
 I had seen the WebSocket clients were performing faster, but I was surprised when I saw these numbers. So I decided this was not a good test, because you would never have so many clients in a single browser (unless you are making a test application like this one). So I decided to answer a different question: How long does it take for the first message to arrive? This chart answers that question:
 
 <p align="center">
-<img src="https://github.com/eltoroit/ETWSBlogStarter/blob/master/Blog/50Clients-FirstResponse.png?raw=true">
+<img src="https://github.com/eltoroit/ETWSBlogSalesforce/blob/master/Blog/50Clients-FirstResponse.png?raw=true">
 </p>
 
 We can see that WebSockets are still faster (0.050 seconds) than Platform Events (0.300 seconds) by a factor of 6X.
 
 Did you notice how predictable the WebSockets are? That was something that impressed me and noticed while I was running the tests for this blog.
 
-You can see the full <a href="https://github.com/eltoroit/ETWSBlogStarter/blob/master/Blog/Stats.xlsx?raw=true">details of the tests here</a>.
+You can see the full <a href="https://github.com/eltoroit/ETWSBlogSalesforce/blob/master/Blog/Stats.xlsx?raw=true">details of the tests here</a>.
 
 ## Wow. I am sold! Does Salesforce support having these WebSockets connections open forever?
 
@@ -107,7 +107,7 @@ As explained in the documentation: “The Lightning Component framework uses Con
 I build a NodeJs server that I run in localhost for testing and Heroku for production. You can see all the code in this repo.
 
 <p align="center">
-<a href="https://github.com/eltoroit/ETWSBlogStarter" target="_blank">
-<img src="https://github.com/eltoroit/ETWSBlogStarter/blob/master/Blog/RepoLink.png?raw=true" />
+<a href="https://github.com/eltoroit/ETWSBlogSalesforce" target="_blank">
+<img src="https://github.com/eltoroit/ETWSBlogSalesforce/blob/master/Blog/RepoLink.png?raw=true" />
 </a>
 </p>
