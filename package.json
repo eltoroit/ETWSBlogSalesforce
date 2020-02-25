@@ -1,0 +1,7 @@
+{
+  "name": "etwsblogsalesforce",
+  "version": "1.0.0",
+  "scripts": {
+    "postinstall": "npm install --prefix WebsServer"
+  }
+}
